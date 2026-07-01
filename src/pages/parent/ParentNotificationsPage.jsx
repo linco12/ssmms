@@ -11,7 +11,7 @@ export default function ParentNotificationsPage() {
 
   useEffect(() => {
     if (!currentUser) return
-    return onValue(ref(db, `notifications/${currentUser.uid}`), (snap) => {
+    return onValue(ref(db, `ssmms/notifications/${currentUser.uid}`), (snap) => {
       const list = []
       snap.forEach((c) => { list.push({ key: c.key, ...c.val() }) })
       list.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))
@@ -20,7 +20,7 @@ export default function ParentNotificationsPage() {
   }, [currentUser])
 
   const markRead = async (key) => {
-    await update(ref(db, `notifications/${currentUser.uid}/${key}`), { read: true })
+    await update(ref(db, `ssmms/notifications/${currentUser.uid}/${key}`), { read: true })
   }
 
   const TYPE_STYLE = {

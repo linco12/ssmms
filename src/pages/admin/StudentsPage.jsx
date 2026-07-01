@@ -53,15 +53,15 @@ export default function StudentsPage() {
 
   useEffect(() => {
     const uns = [
-      onValue(ref(db, 'students'), snap => { const l = []; snap.forEach(c => { l.push({ key: c.key, ...c.val() }) }); setStudents(l) }),
-      onValue(ref(db, 'classes'), snap => { const l = []; snap.forEach(c => { l.push({ key: c.key, ...c.val() }) }); l.sort((a,b) => a.name.localeCompare(b.name)); setClasses(l) }),
-      onValue(ref(db, 'subjects'), snap => { const l = []; snap.forEach(c => { l.push({ key: c.key, ...c.val() }) }); l.sort((a,b) => a.name.localeCompare(b.name)); setSubjects(l) }),
-      onValue(ref(db, 'classSubjects'), snap => setClassSubjects(snap.exists() ? snap.val() : {})),
-      onValue(ref(db, 'studentSubjects'), snap => setStudentSubjects(snap.exists() ? snap.val() : {})),
-      onValue(ref(db, 'academicResults'), snap => setAcademicResults(snap.exists() ? snap.val() : {})),
-      onValue(ref(db, 'assessments'), snap => { const l = []; snap.forEach(c => { l.push({ key: c.key, ...c.val() }) }); l.sort((a,b) => (a.order||0)-(b.order||0)); setAssessments(l) }),
-      onValue(ref(db, 'feeStructure'), snap => { setFeeStructure(snap.exists() ? snap.val() : { compulsory: {}, subjectFees: {} }) }),
-      onValue(ref(db, 'users'), snap => {
+      onValue(ref(db, 'ssmms/students'), snap => { const l = []; snap.forEach(c => { l.push({ key: c.key, ...c.val() }) }); setStudents(l) }),
+      onValue(ref(db, 'ssmms/classes'), snap => { const l = []; snap.forEach(c => { l.push({ key: c.key, ...c.val() }) }); l.sort((a,b) => a.name.localeCompare(b.name)); setClasses(l) }),
+      onValue(ref(db, 'ssmms/subjects'), snap => { const l = []; snap.forEach(c => { l.push({ key: c.key, ...c.val() }) }); l.sort((a,b) => a.name.localeCompare(b.name)); setSubjects(l) }),
+      onValue(ref(db, 'ssmms/classSubjects'), snap => setClassSubjects(snap.exists() ? snap.val() : {})),
+      onValue(ref(db, 'ssmms/studentSubjects'), snap => setStudentSubjects(snap.exists() ? snap.val() : {})),
+      onValue(ref(db, 'ssmms/academicResults'), snap => setAcademicResults(snap.exists() ? snap.val() : {})),
+      onValue(ref(db, 'ssmms/assessments'), snap => { const l = []; snap.forEach(c => { l.push({ key: c.key, ...c.val() }) }); l.sort((a,b) => (a.order||0)-(b.order||0)); setAssessments(l) }),
+      onValue(ref(db, 'ssmms/feeStructure'), snap => { setFeeStructure(snap.exists() ? snap.val() : { compulsory: {}, subjectFees: {} }) }),
+      onValue(ref(db, 'ssmms/users'), snap => {
         const l = []
         snap.forEach(c => { const u = c.val(); l.push({ uid: c.key, ...u }) })
         l.sort((a, b) => (a.displayName || '').localeCompare(b.displayName || ''))
@@ -136,18 +136,18 @@ export default function StudentsPage() {
         data.termFee = calculatedFee
         data.feeBalance = calculatedFee
       }
-      const r = push(ref(db, 'students'))
+      const r = push(ref(db, 'ssmms/students'))
       await set(r, { ...data, studentId, createdAt: new Date().toISOString() })
       if (form.classKey && classSubjects[form.classKey]) {
-        await set(ref(db, `studentSubjects/${r.key}`), classSubjects[form.classKey])
+        await set(ref(db, `ssmms/studentSubjects/${r.key}`), classSubjects[form.classKey])
       }
       await logAction(currentUser, 'CREATE', 'student', { studentId, name: form.fullName })
     } else {
       const { key, ...rest } = data
       if (calculatedFee > 0) rest.termFee = calculatedFee
-      await update(ref(db, `students/${form.key}`), rest)
+      await update(ref(db, `ssmms/students/${form.key}`), rest)
       if (form.classKey && classSubjects[form.classKey]) {
-        await set(ref(db, `studentSubjects/${form.key}`), classSubjects[form.classKey])
+        await set(ref(db, `ssmms/studentSubjects/${form.key}`), classSubjects[form.classKey])
       }
       await logAction(currentUser, 'UPDATE', 'student', { name: form.fullName })
     }
@@ -156,8 +156,8 @@ export default function StudentsPage() {
 
   const handleDelete = async () => {
     const s = students.find(x => x.key === deleteKey)
-    await remove(ref(db, `students/${deleteKey}`))
-    await remove(ref(db, `studentSubjects/${deleteKey}`))
+    await remove(ref(db, `ssmms/students/${deleteKey}`))
+    await remove(ref(db, `ssmms/studentSubjects/${deleteKey}`))
     await logAction(currentUser, 'DELETE', 'student', { name: s?.fullName })
     setDeleteKey(null)
   }
@@ -399,7 +399,7 @@ export default function StudentsPage() {
           <div className="bg-white rounded-xl shadow-xl w-full max-w-sm max-h-[90vh] overflow-y-auto p-5">
             <h3 className="font-bold text-[#0D3B66] mb-1">Subjects — {subjectStudent.fullName}</h3>
             <p className="text-xs text-slate-400 mb-3">{subjectStudent.classGrade}</p>
-            <button onClick={() => { if(subjectStudent.classKey && classSubjects[subjectStudent.classKey]) set(ref(db, `studentSubjects/${subjectStudent.key}`), classSubjects[subjectStudent.classKey]) }} className="text-xs bg-slate-100 text-slate-600 px-3 py-1.5 rounded mb-3 hover:bg-slate-200">Reset to class defaults</button>
+            <button onClick={() => { if(subjectStudent.classKey && classSubjects[subjectStudent.classKey]) set(ref(db, `ssmms/studentSubjects/${subjectStudent.key}`), classSubjects[subjectStudent.classKey]) }} className="text-xs bg-slate-100 text-slate-600 px-3 py-1.5 rounded mb-3 hover:bg-slate-200">Reset to class defaults</button>
             <div className="space-y-1.5">
               {subjects.map(sub => {
                 const checked = !!(studentSubjects[subjectStudent.key]?.[sub.key])

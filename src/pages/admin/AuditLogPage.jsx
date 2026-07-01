@@ -8,7 +8,7 @@ export default function AuditLogPage() {
   const [search, setSearch] = useState('')
 
   useEffect(() => {
-    const q = query(ref(db, 'auditLogs'), orderByChild('timestamp'), limitToLast(200))
+    const q = query(ref(db, 'ssmms/auditLogs'), orderByChild('timestamp'), limitToLast(200))
     return onValue(q, (snap) => {
       const list = []
       snap.forEach((child) => { list.push({ key: child.key, ...child.val() }) })

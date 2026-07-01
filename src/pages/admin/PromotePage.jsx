@@ -20,14 +20,14 @@ export default function PromotePage() {
   const [tab, setTab] = useState('promote')
 
   useEffect(() => {
-    const u1 = onValue(ref(db, 'classes'), snap => {
+    const u1 = onValue(ref(db, 'ssmms/classes'), snap => {
       const list = []; snap.forEach(c => { list.push({ key: c.key, ...c.val() }) }); list.sort((a, b) => a.name.localeCompare(b.name)); setClasses(list)
     })
-    const u2 = onValue(ref(db, 'students'), snap => {
+    const u2 = onValue(ref(db, 'ssmms/students'), snap => {
       const list = []; snap.forEach(c => { list.push({ key: c.key, ...c.val() }) }); setStudents(list)
     })
-    const u3 = onValue(ref(db, 'feeStructure'), snap => { setFeeStructure(snap.exists() ? snap.val() : {}) })
-    const u4 = onValue(ref(db, 'terms'), snap => {
+    const u3 = onValue(ref(db, 'ssmms/feeStructure'), snap => { setFeeStructure(snap.exists() ? snap.val() : {}) })
+    const u4 = onValue(ref(db, 'ssmms/terms'), snap => {
       const list = []; snap.forEach(c => { list.push({ key: c.key, ...c.val() }) }); setTerms(list)
     })
     return () => { u1(); u2(); u3(); u4() }
@@ -97,7 +97,7 @@ export default function PromotePage() {
     let count = 0
     for (const s of studentsInSource) {
       const data = buildPromoteData(s, targetClass)
-      await update(ref(db, `students/${s.key}`), data)
+      await update(ref(db, `ssmms/students/${s.key}`), data)
       await logAction(currentUser, 'PROMOTION', 'student', { studentId: s.studentId, name: s.fullName, from: sourceClass.name, to: targetClass.name })
       count++
     }
@@ -108,7 +108,7 @@ export default function PromotePage() {
   const promoteSingle = async (student) => {
     if (!targetKey) return
     const data = buildPromoteData(student, targetClass)
-    await update(ref(db, `students/${student.key}`), data)
+    await update(ref(db, `ssmms/students/${student.key}`), data)
     await logAction(currentUser, 'PROMOTION', 'student', { studentId: student.studentId, name: student.fullName, from: sourceClass.name, to: targetClass.name })
     setResult({ count: 1, from: sourceClass.name, to: targetClass.name, name: student.fullName })
   }
@@ -117,7 +117,7 @@ export default function PromotePage() {
     if (!confirm(`Graduate all ${form6Students.length} active Form 6 students? They will be marked as Graduated and removed from active rolls.`)) return
     setPromoting(true)
     for (const s of form6Students) {
-      await update(ref(db, `students/${s.key}`), {
+      await update(ref(db, `ssmms/students/${s.key}`), {
         enrollmentStatus: 'Graduated',
         graduatedAt: new Date().toISOString(),
         graduatedYear: new Date().getFullYear(),
@@ -135,7 +135,7 @@ export default function PromotePage() {
     const active = students.filter(s => s.enrollmentStatus === 'Active')
     for (const s of active) {
       const prevBalance = carryFees ? Number(s.feeBalance || 0) : 0
-      await update(ref(db, `students/${s.key}`), {
+      await update(ref(db, `ssmms/students/${s.key}`), {
         termFee: compulsoryTotal,
         feeBalance: compulsoryTotal + (prevBalance > 0 ? prevBalance : 0),
         prevTermCredit: prevBalance < 0 ? Math.abs(prevBalance) : 0,

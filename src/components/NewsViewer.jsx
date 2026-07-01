@@ -11,7 +11,7 @@ export default function NewsViewer() {
   const [expanded, setExpanded] = useState(null)
 
   useEffect(() => {
-    return onValue(ref(db, 'news'), snap => {
+    return onValue(ref(db, 'ssmms/news'), snap => {
       const list = []
       snap.forEach(c => { list.push({ key: c.key, ...c.val() }) })
       list.sort((a, b) => {

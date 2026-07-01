@@ -27,29 +27,29 @@ export default function SchoolFeesPage() {
   const [editComp, setEditComp] = useState(null)  // { key, name, amount }
 
   useEffect(() => {
-    const u1 = onValue(ref(db, 'students'), snap => {
+    const u1 = onValue(ref(db, 'ssmms/students'), snap => {
       const list = []
       snap.forEach(c => { list.push({ key: c.key, ...c.val() }) })
       setStudents(list)
     })
-    const u2 = onValue(ref(db, 'classes'), snap => {
+    const u2 = onValue(ref(db, 'ssmms/classes'), snap => {
       const list = []
       snap.forEach(c => { list.push({ key: c.key, ...c.val() }) })
       list.sort((a, b) => a.name.localeCompare(b.name))
       setClasses(list)
     })
-    const u3 = onValue(ref(db, 'subjects'), snap => {
+    const u3 = onValue(ref(db, 'ssmms/subjects'), snap => {
       const list = []
       snap.forEach(c => { list.push({ key: c.key, ...c.val() }) })
       list.sort((a, b) => a.name.localeCompare(b.name))
       setSubjects(list)
     })
-    const u4 = onValue(ref(db, 'feeStructure/compulsory'), snap => {
+    const u4 = onValue(ref(db, 'ssmms/feeStructure/compulsory'), snap => {
       const list = []
       snap.forEach(c => { list.push({ key: c.key, ...c.val() }) })
       setCompulsory(list)
     })
-    const u5 = onValue(ref(db, 'feeStructure/subjectFees'), snap => {
+    const u5 = onValue(ref(db, 'ssmms/feeStructure/subjectFees'), snap => {
       setSubjectFees(snap.exists() ? snap.val() : {})
     })
     return () => { u1(); u2(); u3(); u4(); u5() }
@@ -61,19 +61,19 @@ export default function SchoolFeesPage() {
 
   const addCompulsory = async () => {
     if (!newFeeName.trim() || !newFeeAmt) return
-    await push(ref(db, 'feeStructure/compulsory'), { name: newFeeName.trim(), amount: Number(newFeeAmt) })
+    await push(ref(db, 'ssmms/feeStructure/compulsory'), { name: newFeeName.trim(), amount: Number(newFeeAmt) })
     setNewFeeName(''); setNewFeeAmt('')
   }
 
   const saveCompulsory = async () => {
     if (!editComp) return
-    await update(ref(db, `feeStructure/compulsory/${editComp.key}`), { name: editComp.name, amount: Number(editComp.amount) })
+    await update(ref(db, `ssmms/feeStructure/compulsory/${editComp.key}`), { name: editComp.name, amount: Number(editComp.amount) })
     setEditComp(null)
   }
 
   const deleteCompulsory = async (key) => {
     if (!confirm('Remove this fee component?')) return
-    await remove(ref(db, `feeStructure/compulsory/${key}`))
+    await remove(ref(db, `ssmms/feeStructure/compulsory/${key}`))
   }
 
   // ─── Subject fee editor ─────────────────────────────────────────
@@ -81,9 +81,9 @@ export default function SchoolFeesPage() {
   const setSubjectFee = async (subjectKey, value) => {
     const amount = Number(value)
     if (amount > 0) {
-      await set(ref(db, `feeStructure/subjectFees/${subjectKey}`), amount)
+      await set(ref(db, `ssmms/feeStructure/subjectFees/${subjectKey}`), amount)
     } else {
-      await remove(ref(db, `feeStructure/subjectFees/${subjectKey}`))
+      await remove(ref(db, `ssmms/feeStructure/subjectFees/${subjectKey}`))
     }
   }
 
@@ -128,7 +128,7 @@ export default function SchoolFeesPage() {
 
   const setTermFee = async (key, fee) => {
     setSaving(true)
-    await update(ref(db, `students/${key}`), { termFee: Number(fee) })
+    await update(ref(db, `ssmms/students/${key}`), { termFee: Number(fee) })
     setEditKey(null)
     setSaving(false)
   }
@@ -137,7 +137,7 @@ export default function SchoolFeesPage() {
     if (!bulkFee || !confirm(`Set $${bulkFee} term fee for all ${filtered.length} shown students?`)) return
     setSaving(true)
     for (const s of filtered) {
-      await update(ref(db, `students/${s.key}`), { termFee: Number(bulkFee) })
+      await update(ref(db, `ssmms/students/${s.key}`), { termFee: Number(bulkFee) })
     }
     setBulkFee('')
     setSaving(false)

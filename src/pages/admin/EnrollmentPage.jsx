@@ -15,7 +15,7 @@ export default function EnrollmentPage() {
   const [updating, setUpdating] = useState(null)
 
   useEffect(() => {
-    return onValue(ref(db, 'students'), (snap) => {
+    return onValue(ref(db, 'ssmms/students'), (snap) => {
       const list = []
       snap.forEach((child) => { list.push({ key: child.key, ...child.val() }) })
       setStudents(list)
@@ -32,7 +32,7 @@ export default function EnrollmentPage() {
 
   const changeStatus = async (student, newStatus) => {
     setUpdating(student.key)
-    await update(ref(db, `students/${student.key}`), {
+    await update(ref(db, `ssmms/students/${student.key}`), {
       enrollmentStatus: newStatus,
       statusUpdatedAt: new Date().toISOString(),
     })

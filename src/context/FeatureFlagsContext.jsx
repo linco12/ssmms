@@ -22,7 +22,7 @@ export function FeatureFlagsProvider({ children }) {
 
   // Global flags
   useEffect(() => {
-    return onValue(ref(db, 'featureFlags'), snap => {
+    return onValue(ref(db, 'ssmms/featureFlags'), snap => {
       setFlags({ ...DEFAULTS, ...( snap.val() || {}) })
       setLoaded(true)
     })
@@ -31,7 +31,7 @@ export function FeatureFlagsProvider({ children }) {
   // Per-user privilege overrides for current user
   useEffect(() => {
     if (!currentUser?.uid) return
-    return onValue(ref(db, `userPrivileges/${currentUser.uid}`), snap => {
+    return onValue(ref(db, `ssmms/userPrivileges/${currentUser.uid}`), snap => {
       setUserPrivileges(snap.val() || {})
     })
   }, [currentUser?.uid])
@@ -44,10 +44,10 @@ export function FeatureFlagsProvider({ children }) {
     return flags[flagKey] ?? true
   }
 
-  const setFlag            = (key, value)        => set(ref(db, `featureFlags/${key}`), Boolean(value))
-  const resetAll           = ()                   => set(ref(db, 'featureFlags'), DEFAULTS)
-  const setUserPrivilege   = (uid, key, value)   => set(ref(db, `userPrivileges/${uid}/${key}`), Boolean(value))
-  const removeUserPrivilege = (uid, key)          => remove(ref(db, `userPrivileges/${uid}/${key}`))
+  const setFlag            = (key, value)        => set(ref(db, `ssmms/featureFlags/${key}`), Boolean(value))
+  const resetAll           = ()                   => set(ref(db, 'ssmms/featureFlags'), DEFAULTS)
+  const setUserPrivilege   = (uid, key, value)   => set(ref(db, `ssmms/userPrivileges/${uid}/${key}`), Boolean(value))
+  const removeUserPrivilege = (uid, key)          => remove(ref(db, `ssmms/userPrivileges/${uid}/${key}`))
 
   return (
     <FeatureFlagsContext.Provider value={{ flags, userPrivileges, isEnabled, setFlag, resetAll, loaded, setUserPrivilege, removeUserPrivilege }}>

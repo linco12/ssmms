@@ -17,19 +17,19 @@ export default function ClassesPage() {
   const [expandedKey, setExpandedKey] = useState(null)
 
   useEffect(() => {
-    const u1 = onValue(ref(db, 'classes'), (snap) => {
+    const u1 = onValue(ref(db, 'ssmms/classes'), (snap) => {
       const list = []
       snap.forEach((c) => { list.push({ key: c.key, ...c.val() }) })
       list.sort((a, b) => a.name.localeCompare(b.name))
       setClasses(list)
     })
-    const u2 = onValue(ref(db, 'subjects'), (snap) => {
+    const u2 = onValue(ref(db, 'ssmms/subjects'), (snap) => {
       const list = []
       snap.forEach((c) => { list.push({ key: c.key, ...c.val() }) })
       list.sort((a, b) => a.name.localeCompare(b.name))
       setSubjects(list)
     })
-    const u3 = onValue(ref(db, 'users'), (snap) => {
+    const u3 = onValue(ref(db, 'ssmms/users'), (snap) => {
       const list = []
       snap.forEach((c) => {
         const u = c.val()
@@ -37,7 +37,7 @@ export default function ClassesPage() {
       })
       setTeachers(list)
     })
-    const u4 = onValue(ref(db, 'classSubjects'), (snap) => {
+    const u4 = onValue(ref(db, 'ssmms/classSubjects'), (snap) => {
       setClassSubjects(snap.exists() ? snap.val() : {})
     })
     return () => { u1(); u2(); u3(); u4() }
@@ -47,7 +47,7 @@ export default function ClassesPage() {
     const name = className(form, section)
     if (classes.some((c) => c.name === name)) { alert(`${name} already exists.`); return }
     setSaving(true)
-    const r = push(ref(db, 'classes'))
+    const r = push(ref(db, 'ssmms/classes'))
     await set(r, { name, form: Number(form), section, teacherUid: null, teacherName: null, createdAt: new Date().toISOString() })
     await logAction(currentUser, 'CREATE', 'class', { name })
     setSaving(false)
@@ -55,12 +55,12 @@ export default function ClassesPage() {
 
   const assignTeacher = async (cls, teacherUid) => {
     const teacher = teachers.find((t) => t.uid === teacherUid)
-    await update(ref(db, `classes/${cls.key}`), {
+    await update(ref(db, `ssmms/classes/${cls.key}`), {
       teacherUid: teacherUid || null,
       teacherName: teacher?.displayName || null,
     })
     if (teacherUid) {
-      await update(ref(db, `users/${teacherUid}`), { assignedClass: cls.name, assignedClassKey: cls.key })
+      await update(ref(db, `ssmms/users/${teacherUid}`), { assignedClass: cls.name, assignedClassKey: cls.key })
     }
     await logAction(currentUser, 'UPDATE', 'class', { class: cls.name, assignedTeacher: teacher?.displayName })
   }
@@ -76,7 +76,7 @@ export default function ClassesPage() {
 
   const deleteClass = async (cls) => {
     if (!confirm(`Delete class ${cls.name}? Students in this class will lose their class assignment.`)) return
-    await remove(ref(db, `classes/${cls.key}`))
+    await remove(ref(db, `ssmms/classes/${cls.key}`))
     await logAction(currentUser, 'DELETE', 'class', { name: cls.name })
   }
 

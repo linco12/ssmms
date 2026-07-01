@@ -16,7 +16,7 @@ export default function TransactionsPage() {
   const [expandedKey, setExpandedKey] = useState(null)
 
   useEffect(() => {
-    return onValue(ref(db, 'payments'), (snap) => {
+    return onValue(ref(db, 'ssmms/payments'), (snap) => {
       const list = []
       snap.forEach((studentNode) => {
         studentNode.forEach((p) => { list.push({ key: p.key, studentKey: studentNode.key, ...p.val() }) })

@@ -28,7 +28,7 @@ export default function NewsPage() {
   const fileRef = useRef()
 
   useEffect(() => {
-    return onValue(ref(db, 'news'), snap => {
+    return onValue(ref(db, 'ssmms/news'), snap => {
       const list = []
       snap.forEach(c => { list.push({ key: c.key, ...c.val() }) })
       list.sort((a, b) => {
@@ -73,11 +73,11 @@ export default function NewsPage() {
       }
       const data = { ...form, imageUrl, updatedAt: new Date().toISOString(), createdBy: currentUser.uid }
       if (modal === 'new') {
-        const r = push(ref(db, 'news'))
+        const r = push(ref(db, 'ssmms/news'))
         await set(r, { ...data, createdAt: new Date().toISOString() })
       } else {
         const { key, ...rest } = data
-        await update(ref(db, `news/${form.key}`), rest)
+        await update(ref(db, `ssmms/news/${form.key}`), rest)
       }
       setModal(null)
     } finally {
@@ -87,11 +87,11 @@ export default function NewsPage() {
 
   const handleDelete = async (key, title) => {
     if (!confirm(`Delete "${title}"?`)) return
-    await remove(ref(db, `news/${key}`))
+    await remove(ref(db, `ssmms/news/${key}`))
   }
 
   const togglePin = async a => {
-    await update(ref(db, `news/${a.key}`), { pinned: !a.pinned })
+    await update(ref(db, `ssmms/news/${a.key}`), { pinned: !a.pinned })
   }
 
   return (

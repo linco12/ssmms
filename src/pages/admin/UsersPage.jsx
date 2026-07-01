@@ -39,7 +39,7 @@ export default function UsersPage() {
   const [privData,  setPrivData]  = useState({})   // current userPrivileges for selected user
 
   useEffect(() => {
-    return onValue(ref(db, 'users'), (snap) => {
+    return onValue(ref(db, 'ssmms/users'), (snap) => {
       const list = []
       snap.forEach((child) => { list.push({ uid: child.key, ...child.val() }) })
       list.sort((a, b) => (a.displayName || a.email || '').localeCompare(b.displayName || b.email || ''))
@@ -83,7 +83,7 @@ export default function UsersPage() {
       if (form.role === 'teacher' && form.qualification.trim()) {
         profile.qualification = form.qualification.trim()
       }
-      await set(ref(db, `users/${cred.user.uid}`), profile)
+      await set(ref(db, `ssmms/users/${cred.user.uid}`), profile)
       await signOut(secAuth)
       await logAction(currentUser, 'CREATE', 'user', { email: form.email, role: form.role })
       setSuccess(`Account created for ${form.displayName.trim()} (${form.role})`)
@@ -99,19 +99,19 @@ export default function UsersPage() {
 
   const changeRole = async (user, newRole) => {
     setUpdating(user.uid)
-    await update(ref(db, `users/${user.uid}`), { role: newRole })
+    await update(ref(db, `ssmms/users/${user.uid}`), { role: newRole })
     await logAction(currentUser, 'ROLE_CHANGE', 'user', { uid: user.uid, email: user.email, from: user.role, to: newRole })
     setUpdating(null)
   }
 
   const toggleDev = async (user) => {
-    await update(ref(db, `users/${user.uid}`), { isDeveloper: !user.isDeveloper })
+    await update(ref(db, `ssmms/users/${user.uid}`), { isDeveloper: !user.isDeveloper })
   }
 
   const openPrivModal = (user) => {
     setPrivModal(user)
     // Load current privileges for this user
-    onValue(ref(db, `userPrivileges/${user.uid}`), snap => {
+    onValue(ref(db, `ssmms/userPrivileges/${user.uid}`), snap => {
       setPrivData(snap.val() || {})
     }, { onlyOnce: true })
   }
@@ -121,16 +121,16 @@ export default function UsersPage() {
     const uid = privModal.uid
     if (currentValue === null) {
       // No override → set to ON (explicit)
-      await set(ref(db, `userPrivileges/${uid}/${flagKey}`), true)
+      await set(ref(db, `ssmms/userPrivileges/${uid}/${flagKey}`), true)
     } else if (currentValue === true) {
       // ON → OFF
-      await set(ref(db, `userPrivileges/${uid}/${flagKey}`), false)
+      await set(ref(db, `ssmms/userPrivileges/${uid}/${flagKey}`), false)
     } else {
       // OFF → remove override (inherit global)
-      await remove(ref(db, `userPrivileges/${uid}/${flagKey}`))
+      await remove(ref(db, `ssmms/userPrivileges/${uid}/${flagKey}`))
     }
     // Reload
-    const snap = await (await import('firebase/database')).get(ref(db, `userPrivileges/${uid}`))
+    const snap = await (await import('firebase/database')).get(ref(db, `ssmms/userPrivileges/${uid}`))
     setPrivData(snap.val() || {})
   }
 

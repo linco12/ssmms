@@ -18,9 +18,9 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        const profileSnap = await get(ref(db, `users/${firebaseUser.uid}`))
+        const profileSnap = await get(ref(db, `ssmms/users/${firebaseUser.uid}`))
         const profile = profileSnap.exists() ? profileSnap.val() : {}
-        await set(ref(db, `users/${firebaseUser.uid}/lastLogin`), new Date().toISOString())
+        await set(ref(db, `ssmms/users/${firebaseUser.uid}/lastLogin`), new Date().toISOString())
         setCurrentUser(firebaseUser)
         setUserProfile(profile)
       } else {

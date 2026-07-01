@@ -12,13 +12,13 @@ export default function ParentFeesPage() {
 
   useEffect(() => {
     if (!currentUser) return
-    const q = query(ref(db, 'students'), orderByChild('linkedParentUid'), equalTo(currentUser.uid))
+    const q = query(ref(db, 'ssmms/students'), orderByChild('linkedParentUid'), equalTo(currentUser.uid))
     return onValue(q, (snap) => {
       if (snap.exists()) {
         const entries = Object.entries(snap.val())
         const s = { key: entries[0][0], ...entries[0][1] }
         setStudent(s)
-        onValue(ref(db, `payments/${s.key}`), (pSnap) => {
+        onValue(ref(db, `ssmms/payments/${s.key}`), (pSnap) => {
           const list = []
           pSnap.forEach((p) => { list.push({ key: p.key, ...p.val() }) })
           list.sort((a, b) => new Date(b.date) - new Date(a.date))

@@ -76,7 +76,7 @@ export function useNotifications() {
         await PushNotifications.register()
 
         listeners.push(await PushNotifications.addListener('registration', async ({ value }) => {
-          await set(ref(db, `users/${currentUser.uid}/fcmTokens/${tokenKey(value)}`), value)
+          await set(ref(db, `ssmms/users/${currentUser.uid}/fcmTokens/${tokenKey(value)}`), value)
         }))
 
         listeners.push(await PushNotifications.addListener('registrationError', err => {
@@ -119,7 +119,7 @@ export function useNotifications() {
     const t1 = setTimeout(() => { annReady  = true }, 2000)
     const t2 = setTimeout(() => { newsReady = true }, 2000)
 
-    const unsubAnn = onChildAdded(ref(db, 'announcements'), async snap => {
+    const unsubAnn = onChildAdded(ref(db, 'ssmms/announcements'), async snap => {
       if (!annReady) return
       const ann = snap.val()
       if (!ann?.title) return
@@ -128,7 +128,7 @@ export function useNotifications() {
     })
 
     const TYPE_ICON = { announcement: '📢', event: '📅', news: '📰' }
-    const unsubNews = onChildAdded(ref(db, 'news'), async snap => {
+    const unsubNews = onChildAdded(ref(db, 'ssmms/news'), async snap => {
       if (!newsReady) return
       const article = snap.val()
       if (!article?.title) return
@@ -151,7 +151,7 @@ export function useNotifications() {
 
     let unsubStudents = null
 
-    unsubStudents = onValue(ref(db, 'students'), snap => {
+    unsubStudents = onValue(ref(db, 'ssmms/students'), snap => {
       let student = null
       const data = snap.val() || {}
       for (const [key, s] of Object.entries(data)) {
@@ -164,7 +164,7 @@ export function useNotifications() {
 
       if (timetableUnsub.current) { timetableUnsub.current(); timetableUnsub.current = null }
 
-      timetableUnsub.current = onValue(ref(db, `timetable/${student.classKey}`), async ttSnap => {
+      timetableUnsub.current = onValue(ref(db, `ssmms/timetable/${student.classKey}`), async ttSnap => {
         if (!ttSnap.exists()) return
         await scheduleTimetableNotifications(ttSnap.val(), student.classGrade || 'Class')
       })
@@ -191,7 +191,7 @@ export function useNotifications() {
         })
         if (!raw) return
 
-        await set(ref(db, `users/${currentUser.uid}/fcmTokens/${tokenKey(raw)}`), raw)
+        await set(ref(db, `ssmms/users/${currentUser.uid}/fcmTokens/${tokenKey(raw)}`), raw)
 
         onMessage(messaging, payload => {
           const { title, body } = payload.notification || {}

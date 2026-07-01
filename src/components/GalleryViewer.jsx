@@ -11,7 +11,7 @@ export default function GalleryViewer() {
   const [preview, setPreview] = useState(null)
 
   useEffect(() => {
-    return onValue(ref(db, 'gallery'), snap => {
+    return onValue(ref(db, 'ssmms/gallery'), snap => {
       const list = []
       snap.forEach(c => { list.push({ key: c.key, ...c.val() }) })
       list.sort((a, b) => new Date(b.date) - new Date(a.date))

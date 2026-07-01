@@ -14,7 +14,7 @@ export default function AssessmentsPage() {
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
-    return onValue(ref(db, 'assessments'), (snap) => {
+    return onValue(ref(db, 'ssmms/assessments'), (snap) => {
       const list = []
       snap.forEach((c) => { list.push({ key: c.key, ...c.val() }) })
       list.sort((a, b) => (a.order ?? 99) - (b.order ?? 99) || a.name.localeCompare(b.name))
@@ -30,10 +30,10 @@ export default function AssessmentsPage() {
     setSaving(true)
     const data = { name: form.name.trim(), outOf: Number(form.outOf) || 100, order: Number(form.order) || 99 }
     if (editKey) {
-      await update(ref(db, `assessments/${editKey}`), data)
+      await update(ref(db, `ssmms/assessments/${editKey}`), data)
       await logAction(currentUser, 'UPDATE', 'assessment', { name: data.name })
     } else {
-      const r = push(ref(db, 'assessments'))
+      const r = push(ref(db, 'ssmms/assessments'))
       await set(r, { ...data, createdAt: new Date().toISOString() })
       await logAction(currentUser, 'CREATE', 'assessment', { name: data.name })
     }
@@ -44,7 +44,7 @@ export default function AssessmentsPage() {
 
   const handleDelete = async (a) => {
     if (!confirm(`Delete assessment "${a.name}"? All saved marks for this assessment will be orphaned.`)) return
-    await remove(ref(db, `assessments/${a.key}`))
+    await remove(ref(db, `ssmms/assessments/${a.key}`))
     await logAction(currentUser, 'DELETE', 'assessment', { name: a.name })
   }
 

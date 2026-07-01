@@ -14,7 +14,7 @@ export default function AdminSettingsPage() {
   const [msg, setMsg]                     = useState({ type: '', text: '' })
 
   useEffect(() => {
-    return onValue(ref(db, 'adminSettings/deleteKey'), snap => {
+    return onValue(ref(db, 'ssmms/adminSettings/deleteKey'), snap => {
       setStoredKey(snap.val() || '')
     })
   }, [])
@@ -31,7 +31,7 @@ export default function AdminSettingsPage() {
 
     setSaving(true)
     try {
-      await set(ref(db, 'adminSettings/deleteKey'), newKeyInput.trim())
+      await set(ref(db, 'ssmms/adminSettings/deleteKey'), newKeyInput.trim())
       await logAction(currentUser, 'UPDATE', 'adminSettings', { field: 'deleteKey' })
       flash('success', storedKey ? 'Delete key updated successfully.' : 'Delete key set. All deletions are now protected.')
       setCurrentInput('')
@@ -49,7 +49,7 @@ export default function AdminSettingsPage() {
     if (currentInput !== storedKey) { flash('error', 'Delete key is incorrect.'); return }
     setSaving(true)
     try {
-      await set(ref(db, 'adminSettings/deleteKey'), null)
+      await set(ref(db, 'ssmms/adminSettings/deleteKey'), null)
       await logAction(currentUser, 'DELETE', 'adminSettings', { field: 'deleteKey' })
       flash('success', 'Delete key removed. Deletions are no longer protected.')
       setCurrentInput('')

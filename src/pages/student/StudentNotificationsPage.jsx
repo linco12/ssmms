@@ -10,7 +10,7 @@ export default function StudentNotificationsPage() {
 
   useEffect(() => {
     if (!currentUser) return
-    return onValue(ref(db, `notifications/${currentUser.uid}`), (snap) => {
+    return onValue(ref(db, `ssmms/notifications/${currentUser.uid}`), (snap) => {
       const list = []
       snap.forEach((c) => { list.push({ key: c.key, ...c.val() }) })
       list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
@@ -19,7 +19,7 @@ export default function StudentNotificationsPage() {
   }, [currentUser])
 
   const markRead = async (key) => {
-    await update(ref(db, `notifications/${currentUser.uid}/${key}`), { read: true })
+    await update(ref(db, `ssmms/notifications/${currentUser.uid}/${key}`), { read: true })
   }
 
   const unread = notifications.filter((n) => !n.read).length

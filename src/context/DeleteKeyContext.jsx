@@ -25,7 +25,7 @@ export function DeleteKeyProvider({ children }) {
     setChecking(true)
     setError('')
     try {
-      const snap = await get(ref(db, 'adminSettings/deleteKey'))
+      const snap = await get(ref(db, 'ssmms/adminSettings/deleteKey'))
       const stored = snap.val()
       if (!stored) {
         // No key configured — warn admin but allow

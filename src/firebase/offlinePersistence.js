@@ -6,7 +6,7 @@ import { ref, onValue, goOffline, goOnline } from 'firebase/database'
 // No explicit enablePersistence() call needed for RTDB (unlike Firestore).
 
 export function setupOfflineMonitor(onOnline, onOffline) {
-  const connectedRef = ref(db, '.info/connected')
+  const connectedRef = ref(db, 'ssmms/.info/connected')
   const unsub = onValue(connectedRef, (snap) => {
     if (snap.val() === true) {
       onOnline?.()

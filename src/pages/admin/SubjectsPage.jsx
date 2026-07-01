@@ -27,7 +27,7 @@ export default function SubjectsPage() {
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
-    return onValue(ref(db, 'subjects'), (snap) => {
+    return onValue(ref(db, 'ssmms/subjects'), (snap) => {
       const list = []
       snap.forEach((c) => { list.push({ key: c.key, ...c.val() }) })
       list.sort((a, b) => a.name.localeCompare(b.name))
@@ -49,7 +49,7 @@ export default function SubjectsPage() {
       return
     }
     setSaving(true)
-    const r = push(ref(db, 'subjects'))
+    const r = push(ref(db, 'ssmms/subjects'))
     await set(r, { name, level: newLevel, createdAt: new Date().toISOString() })
     await logAction(currentUser, 'CREATE', 'subject', { name, level: newLevel })
     setNewName('')
@@ -58,7 +58,7 @@ export default function SubjectsPage() {
 
   const handleDelete = async (subject) => {
     if (!confirm(`Delete "${subject.name}"?`)) return
-    await remove(ref(db, `subjects/${subject.key}`))
+    await remove(ref(db, `ssmms/subjects/${subject.key}`))
     await logAction(currentUser, 'DELETE', 'subject', { name: subject.name })
   }
 
@@ -67,7 +67,7 @@ export default function SubjectsPage() {
   const handleEdit = async (subject) => {
     const name = editName.trim()
     if (!name) { setEditKey(null); return }
-    await update(ref(db, `subjects/${subject.key}`), { name, level: editLevel })
+    await update(ref(db, `ssmms/subjects/${subject.key}`), { name, level: editLevel })
     await logAction(currentUser, 'UPDATE', 'subject', { from: subject.name, to: name })
     setEditKey(null)
   }

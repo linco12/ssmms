@@ -20,14 +20,14 @@ export default function TeacherNotifyPage() {
   const [history, setHistory]   = useState([])
 
   useEffect(() => {
-    const u1 = onValue(ref(db, 'classes'), snap => {
+    const u1 = onValue(ref(db, 'ssmms/classes'), snap => {
       const list = []
       snap.forEach(c => list.push({ key: c.key, ...c.val() }))
       list.sort((a, b) => a.name.localeCompare(b.name))
       setClasses(list)
     })
     // Load notification history sent by this teacher
-    const u2 = onValue(ref(db, 'targetedNotifications'), snap => {
+    const u2 = onValue(ref(db, 'ssmms/targetedNotifications'), snap => {
       const list = []
       snap.forEach(c => {
         const n = c.val()
@@ -42,7 +42,7 @@ export default function TeacherNotifyPage() {
   // Load students when class changes (for individual targeting)
   useEffect(() => {
     if (!classKey) { setStudents([]); return }
-    return onValue(ref(db, 'students'), snap => {
+    return onValue(ref(db, 'ssmms/students'), snap => {
       const list = []
       snap.forEach(c => {
         const s = c.val()
@@ -71,7 +71,7 @@ export default function TeacherNotifyPage() {
 
     setSending(true)
     try {
-      await push(ref(db, 'targetedNotifications'), {
+      await push(ref(db, 'ssmms/targetedNotifications'), {
         title:      title.trim(),
         body:       body.trim(),
         targetType,

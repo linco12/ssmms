@@ -10,7 +10,7 @@ initializeApp()
 
 async function getTokensForRoles(roles) {
   const db = getDatabase()
-  const snap = await db.ref('users').once('value')
+  const snap = await db.ref('ssmms/users').once('value')
   const tokens = []
   snap.forEach(child => {
     const u = child.val()
@@ -41,7 +41,7 @@ async function sendMulticast(tokens, title, body, data = {}) {
 
 // ─── 1. New announcement → notify targeted roles immediately ────────────────
 exports.onAnnouncementCreated = onValueCreated(
-  { ref: '/announcements/{id}', region: 'us-central1' },
+  { ref: '/ssmms/announcements/{id}', region: 'us-central1' },
   async event => {
     const ann = event.data.val()
     if (!ann?.title) return
@@ -54,7 +54,7 @@ exports.onAnnouncementCreated = onValueCreated(
 
 // ─── 2. New news / event article posted → notify all users ──────────────────
 exports.onNewsCreated = onValueCreated(
-  { ref: '/news/{id}', region: 'us-central1' },
+  { ref: '/ssmms/news/{id}', region: 'us-central1' },
   async event => {
     const article = event.data.val()
     if (!article?.title) return
@@ -93,9 +93,9 @@ exports.scheduledTimetableAlerts = onSchedule(
     const targetTime = `${hh}:${mm}`
 
     const [ttSnap, classesSnap, studentsSnap] = await Promise.all([
-      db.ref('timetable').once('value'),
-      db.ref('classes').once('value'),
-      db.ref('students').once('value'),
+      db.ref('ssmms/timetable').once('value'),
+      db.ref('ssmms/classes').once('value'),
+      db.ref('ssmms/students').once('value'),
     ])
 
     if (!ttSnap.exists()) return
@@ -115,7 +115,7 @@ exports.scheduledTimetableAlerts = onSchedule(
     })
 
     // Get all FCM tokens per uid
-    const usersSnap = await db.ref('users').once('value')
+    const usersSnap = await db.ref('ssmms/users').once('value')
     const uidToTokens = {}
     usersSnap.forEach(u => {
       const user = u.val()
@@ -153,7 +153,7 @@ exports.scheduledEventReminders = onSchedule(
     const db = getDatabase()
     const today = new Date().toISOString().split('T')[0]
 
-    const eventsSnap = await db.ref('calendarEvents').once('value')
+    const eventsSnap = await db.ref('ssmms/calendarEvents').once('value')
     const todayEvents = []
     eventsSnap.forEach(c => {
       const ev = c.val()
@@ -171,13 +171,13 @@ exports.scheduledEventReminders = onSchedule(
 
 // ─── 5. New assignment posted → notify students in the class ────────────────
 exports.onAssignmentCreated = onValueCreated(
-  { ref: '/assignments/{id}', region: 'us-central1' },
+  { ref: '/ssmms/assignments/{id}', region: 'us-central1' },
   async event => {
     const assignment = event.data.val()
     if (!assignment?.title || !assignment?.classKey) return
 
     const db = getDatabase()
-    const studentsSnap = await db.ref('students').once('value')
+    const studentsSnap = await db.ref('ssmms/students').once('value')
     const uids = []
     studentsSnap.forEach(s => {
       const st = s.val()
@@ -196,7 +196,7 @@ exports.onAssignmentCreated = onValueCreated(
 
     // In-app notifications for each student
     const writePromises = uids.map(uid =>
-      db.ref(`notifications/${uid}`).push({
+      db.ref(`ssmms/notifications/${uid}`).push({
         title: notifTitle,
         body: notifBody,
         type: 'assignment',
@@ -207,7 +207,7 @@ exports.onAssignmentCreated = onValueCreated(
     await Promise.all(writePromises)
 
     // FCM push
-    const usersSnap = await db.ref('users').once('value')
+    const usersSnap = await db.ref('ssmms/users').once('value')
     const tokens = []
     usersSnap.forEach(u => {
       if (uids.includes(u.key)) {
@@ -220,7 +220,7 @@ exports.onAssignmentCreated = onValueCreated(
 
 // ─── 6. Targeted notification (class or individual) → FCM + in-app ──────────
 exports.onTargetedNotificationCreated = onValueCreated(
-  { ref: '/targetedNotifications/{id}', region: 'us-central1' },
+  { ref: '/ssmms/targetedNotifications/{id}', region: 'us-central1' },
   async event => {
     const notif = event.data.val()
     if (!notif?.title) return
@@ -229,7 +229,7 @@ exports.onTargetedNotificationCreated = onValueCreated(
     let uids = []
 
     if (notif.targetType === 'class' && notif.classKey) {
-      const studentsSnap = await db.ref('students').once('value')
+      const studentsSnap = await db.ref('ssmms/students').once('value')
       studentsSnap.forEach(s => {
         const st = s.val()
         if (st.classKey === notif.classKey && st.linkedStudentUid && st.enrollmentStatus === 'Active') {
@@ -243,7 +243,7 @@ exports.onTargetedNotificationCreated = onValueCreated(
     if (uids.length === 0) return
 
     const writePromises = uids.map(uid =>
-      db.ref(`notifications/${uid}`).push({
+      db.ref(`ssmms/notifications/${uid}`).push({
         title: notif.title,
         body: notif.body || '',
         type: 'targeted',
@@ -253,7 +253,7 @@ exports.onTargetedNotificationCreated = onValueCreated(
     )
     await Promise.all(writePromises)
 
-    const usersSnap = await db.ref('users').once('value')
+    const usersSnap = await db.ref('ssmms/users').once('value')
     const tokens = []
     usersSnap.forEach(u => {
       if (uids.includes(u.key)) {
@@ -272,8 +272,8 @@ exports.attendanceReminder = onSchedule(
     const today = new Date().toISOString().split('T')[0].replace(/-/g, '')
 
     const [usersSnap, classesSnap] = await Promise.all([
-      db.ref('users').once('value'),
-      db.ref('classes').once('value'),
+      db.ref('ssmms/users').once('value'),
+      db.ref('ssmms/classes').once('value'),
     ])
 
     // Build classKey → class name map
@@ -300,7 +300,7 @@ exports.attendanceReminder = onSchedule(
     })
 
     // Check attendance records
-    const attendanceSnap = await db.ref('attendance').once('value')
+    const attendanceSnap = await db.ref('ssmms/attendance').once('value')
     const attendance = attendanceSnap.val() || {}
 
     for (const teacher of notifications) {
@@ -327,7 +327,7 @@ exports.scheduledTomorrowReminders = onSchedule(
     tomorrow.setDate(tomorrow.getDate() + 1)
     const tomorrowStr = tomorrow.toISOString().split('T')[0]
 
-    const eventsSnap = await db.ref('calendarEvents').once('value')
+    const eventsSnap = await db.ref('ssmms/calendarEvents').once('value')
     const tomorrowEvents = []
     eventsSnap.forEach(c => {
       const ev = c.val()

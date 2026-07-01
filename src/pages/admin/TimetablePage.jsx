@@ -461,7 +461,7 @@ function AssignmentsTab({ config, assignments, setAssignments, classes, teachers
     const merged   = { ...existing, subjectName: subject?.name || existing.subjectName || '', [field]: val }
     if (teacher) merged.teacherName = teacher.displayName || teacher.email
     if (!teacher && field==='teacherUid') merged.teacherName = ''
-    await set(ref(db, `timetableConfig/assignments/${selectedClass}/${subjectKey}`), merged)
+    await set(ref(db, `ssmms/timetableConfig/assignments/${selectedClass}/${subjectKey}`), merged)
     setAssignments(a => {
       const n = JSON.parse(JSON.stringify(a))
       if (!n[selectedClass]) n[selectedClass] = {}

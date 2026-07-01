@@ -30,19 +30,19 @@ export default function ResultsPage() {
   const assignedClass = userProfile?.assignedClass || null
 
   useEffect(() => {
-    const u1 = onValue(ref(db, 'subjects'), (snap) => {
+    const u1 = onValue(ref(db, 'ssmms/subjects'), (snap) => {
       const list = []
       snap.forEach((c) => { list.push({ key: c.key, ...c.val() }) })
       list.sort((a, b) => a.name.localeCompare(b.name))
       setAllSubjects(list)
     })
-    const u2 = onValue(ref(db, 'assessments'), (snap) => {
+    const u2 = onValue(ref(db, 'ssmms/assessments'), (snap) => {
       const list = []
       snap.forEach((c) => { list.push({ key: c.key, ...c.val() }) })
       list.sort((a, b) => (a.order ?? 99) - (b.order ?? 99))
       setAssessments(list)
     })
-    const u3 = onValue(ref(db, 'students'), (snap) => {
+    const u3 = onValue(ref(db, 'ssmms/students'), (snap) => {
       const list = []
       snap.forEach((c) => {
         const s = c.val()
@@ -56,7 +56,7 @@ export default function ResultsPage() {
   // Load student's subject keys
   useEffect(() => {
     if (!selectedStudent) { setStudentSubjectKeys([]); return }
-    return onValue(ref(db, `studentSubjects/${selectedStudent.key}`), (snap) => {
+    return onValue(ref(db, `ssmms/studentSubjects/${selectedStudent.key}`), (snap) => {
       setStudentSubjectKeys(snap.exists() ? Object.keys(snap.val()) : [])
     })
   }, [selectedStudent])
@@ -64,7 +64,7 @@ export default function ResultsPage() {
   // Load existing marks when student changes
   useEffect(() => {
     if (!selectedStudent) { setMarks({}); return }
-    return onValue(ref(db, `academicResults/${selectedStudent.key}`), (snap) => {
+    return onValue(ref(db, `ssmms/academicResults/${selectedStudent.key}`), (snap) => {
       if (snap.exists()) {
         // Convert stored numbers to strings for controlled inputs
         const loaded = {}
@@ -114,7 +114,7 @@ export default function ResultsPage() {
         }
         if (Object.keys(toSave[subKey]).length === 0) delete toSave[subKey]
       }
-      await set(ref(db, `academicResults/${selectedStudent.key}`), Object.keys(toSave).length ? toSave : null)
+      await set(ref(db, `ssmms/academicResults/${selectedStudent.key}`), Object.keys(toSave).length ? toSave : null)
       await logAction(currentUser, 'UPDATE', 'academicResults', {
         studentId: selectedStudent.studentId,
         name: selectedStudent.fullName,

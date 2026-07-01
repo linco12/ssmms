@@ -3,7 +3,7 @@ import { ref, push, serverTimestamp } from 'firebase/database'
 
 export async function logAction(user, action, entity, details = {}) {
   try {
-    const logsRef = ref(db, 'auditLogs')
+    const logsRef = ref(db, 'ssmms/auditLogs')
     await push(logsRef, {
       uid: user?.uid || 'unknown',
       displayName: user?.displayName || user?.email || 'unknown',

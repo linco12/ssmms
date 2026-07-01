@@ -23,20 +23,20 @@ export default function StudentResultsPage() {
 
   useEffect(() => {
     if (!studentKey) { setLoading(false); return }
-    const u1 = onValue(ref(db, `academicResults/${studentKey}`), (snap) => {
+    const u1 = onValue(ref(db, `ssmms/academicResults/${studentKey}`), (snap) => {
       setResults(snap.exists() ? snap.val() : {})
       setLoading(false)
     })
-    const u2 = onValue(ref(db, `studentSubjects/${studentKey}`), (snap) => {
+    const u2 = onValue(ref(db, `ssmms/studentSubjects/${studentKey}`), (snap) => {
       setSubjectKeys(snap.exists() ? Object.keys(snap.val()) : [])
     })
-    const u3 = onValue(ref(db, 'subjects'), (snap) => {
+    const u3 = onValue(ref(db, 'ssmms/subjects'), (snap) => {
       const list = []
       snap.forEach((c) => { list.push({ key: c.key, ...c.val() }) })
       list.sort((a, b) => a.name.localeCompare(b.name))
       setAllSubjects(list)
     })
-    const u4 = onValue(ref(db, 'assessments'), (snap) => {
+    const u4 = onValue(ref(db, 'ssmms/assessments'), (snap) => {
       const list = []
       snap.forEach((c) => { list.push({ key: c.key, ...c.val() }) })
       list.sort((a, b) => (a.order ?? 99) - (b.order ?? 99))

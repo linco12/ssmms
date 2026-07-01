@@ -12,13 +12,13 @@ export default function StudentDashboard() {
   useEffect(() => {
     const studentKey = userProfile?.studentKey
     if (!studentKey) return
-    const u1 = onValue(ref(db, `students/${studentKey}`), (snap) => {
+    const u1 = onValue(ref(db, `ssmms/students/${studentKey}`), (snap) => {
       if (snap.exists()) setStudent({ key: snap.key, ...snap.val() })
     })
-    const u2 = onValue(ref(db, `studentSubjects/${studentKey}`), (snap) => {
+    const u2 = onValue(ref(db, `ssmms/studentSubjects/${studentKey}`), (snap) => {
       setSubjects(snap.exists() ? Object.keys(snap.val()) : [])
     })
-    const u3 = onValue(ref(db, 'subjects'), (snap) => {
+    const u3 = onValue(ref(db, 'ssmms/subjects'), (snap) => {
       const list = []
       snap.forEach((c) => { list.push({ key: c.key, ...c.val() }) })
       list.sort((a, b) => a.name.localeCompare(b.name))

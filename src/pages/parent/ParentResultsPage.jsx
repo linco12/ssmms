@@ -22,20 +22,20 @@ export default function ParentResultsPage() {
 
   useEffect(() => {
     if (!currentUser) return
-    const q = query(ref(db, 'students'), orderByChild('linkedParentUid'), equalTo(currentUser.uid))
+    const q = query(ref(db, 'ssmms/students'), orderByChild('linkedParentUid'), equalTo(currentUser.uid))
     const u1 = onValue(q, (snap) => {
       if (!snap.exists()) return
       const entries = Object.entries(snap.val())
       const s = { key: entries[0][0], ...entries[0][1] }
       setStudent(s)
     })
-    const u2 = onValue(ref(db, 'subjects'), (snap) => {
+    const u2 = onValue(ref(db, 'ssmms/subjects'), (snap) => {
       const list = []
       snap.forEach((c) => { list.push({ key: c.key, ...c.val() }) })
       list.sort((a, b) => a.name.localeCompare(b.name))
       setAllSubjects(list)
     })
-    const u3 = onValue(ref(db, 'assessments'), (snap) => {
+    const u3 = onValue(ref(db, 'ssmms/assessments'), (snap) => {
       const list = []
       snap.forEach((c) => { list.push({ key: c.key, ...c.val() }) })
       list.sort((a, b) => (a.order ?? 99) - (b.order ?? 99))
@@ -46,10 +46,10 @@ export default function ParentResultsPage() {
 
   useEffect(() => {
     if (!student) return
-    const u1 = onValue(ref(db, `academicResults/${student.key}`), (snap) => {
+    const u1 = onValue(ref(db, `ssmms/academicResults/${student.key}`), (snap) => {
       setResults(snap.exists() ? snap.val() : {})
     })
-    const u2 = onValue(ref(db, `studentSubjects/${student.key}`), (snap) => {
+    const u2 = onValue(ref(db, `ssmms/studentSubjects/${student.key}`), (snap) => {
       setSubjectKeys(snap.exists() ? Object.keys(snap.val()) : [])
     })
     return () => { u1(); u2() }

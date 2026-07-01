@@ -7,7 +7,7 @@ const VAPID_KEY = import.meta.env.VITE_FIREBASE_VAPID_KEY
 // --- In-app notifications (Firebase RTDB) ---
 
 export async function createNotification(uid, { title, body, type = 'info', link = '' }) {
-  await push(ref(db, `notifications/${uid}`), {
+  await push(ref(db, `ssmms/notifications/${uid}`), {
     title,
     body,
     type,
@@ -18,7 +18,7 @@ export async function createNotification(uid, { title, body, type = 'info', link
 }
 
 export async function broadcastToParents(title, body) {
-  const usersSnap = await get(ref(db, 'users'))
+  const usersSnap = await get(ref(db, 'ssmms/users'))
   if (!usersSnap.exists()) return
   const promises = []
   usersSnap.forEach((child) => {

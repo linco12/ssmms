@@ -13,7 +13,7 @@ export default function StudentTimetablePage() {
   useEffect(() => {
     if (!currentUser) return
     // Find student record linked to this user
-    return onValue(ref(db, 'students'), snap => {
+    return onValue(ref(db, 'ssmms/students'), snap => {
       let found = null
       snap.forEach(c => {
         const s = c.val()
@@ -28,7 +28,7 @@ export default function StudentTimetablePage() {
       }
       setClassGrade(found.classGrade || '')
       if (found.classKey) {
-        onValue(ref(db, `timetable/${found.classKey}`), tSnap => {
+        onValue(ref(db, `ssmms/timetable/${found.classKey}`), tSnap => {
           setTimetable(tSnap.exists() ? tSnap.val() : {})
           setLoading(false)
         })

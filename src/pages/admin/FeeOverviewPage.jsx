@@ -8,7 +8,7 @@ export default function FeeOverviewPage() {
   const [search, setSearch] = useState('')
 
   useEffect(() => {
-    return onValue(ref(db, 'students'), (snap) => {
+    return onValue(ref(db, 'ssmms/students'), (snap) => {
       const list = []
       snap.forEach((child) => { list.push({ key: child.key, ...child.val() }) })
       setStudents(list)

@@ -21,7 +21,7 @@ export default function TeacherDashboard() {
   const canAddStudents = isEnabled('priv_teacher_add_students')
 
   useEffect(() => {
-    return onValue(ref(db, 'students'), (snap) => {
+    return onValue(ref(db, 'ssmms/students'), (snap) => {
       const list = []
       snap.forEach((c) => {
         const s = c.val()
@@ -36,7 +36,7 @@ export default function TeacherDashboard() {
     setSaving(true)
     setAddMsg('')
     try {
-      const newRef = push(ref(db, 'students'))
+      const newRef = push(ref(db, 'ssmms/students'))
       await set(newRef, {
         fullName: form.fullName.trim(),
         gender: form.gender || '',

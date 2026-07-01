@@ -150,7 +150,7 @@ export default function TeacherAssignmentsPage() {
 
   // ── Load assignments (only mine) ──────────────────────────────────────────
   useEffect(() => {
-    return onValue(dbRef(db, 'assignments'), snap => {
+    return onValue(dbref(db, 'ssmms/assignments'), snap => {
       const list = []
       snap.forEach(c => {
         const a = c.val()
@@ -163,7 +163,7 @@ export default function TeacherAssignmentsPage() {
 
   // ── Load all classes ──────────────────────────────────────────────────────
   useEffect(() => {
-    return onValue(dbRef(db, 'classes'), snap => {
+    return onValue(dbref(db, 'ssmms/classes'), snap => {
       const list = []
       snap.forEach(c => list.push({ key: c.key, ...c.val() }))
       list.sort((a, b) => a.name.localeCompare(b.name))
@@ -177,7 +177,7 @@ export default function TeacherAssignmentsPage() {
     const u1 = onValue(dbRef(db, `assignmentSubmissions/${selectedAssignment.key}`), snap => {
       setSubmissions(snap.val() || {})
     })
-    const u2 = onValue(dbRef(db, 'students'), snap => {
+    const u2 = onValue(dbref(db, 'ssmms/students'), snap => {
       const list = []
       snap.forEach(c => {
         const s = c.val()
@@ -231,7 +231,7 @@ export default function TeacherAssignmentsPage() {
 
     setSaving(true)
     try {
-      const newRef = push(dbRef(db, 'assignments'))
+      const newRef = push(dbref(db, 'ssmms/assignments'))
       const assignmentId = newRef.key
 
       let attachmentUrl = null

@@ -26,12 +26,12 @@ export default function ReportsPage() {
   const [payments, setPayments] = useState([])
 
   useEffect(() => {
-    const u1 = onValue(ref(db, 'students'), (snap) => {
+    const u1 = onValue(ref(db, 'ssmms/students'), (snap) => {
       const list = []
       snap.forEach((c) => { list.push({ key: c.key, ...c.val() }) })
       setStudents(list)
     })
-    const u2 = onValue(ref(db, 'payments'), (snap) => {
+    const u2 = onValue(ref(db, 'ssmms/payments'), (snap) => {
       const list = []
       snap.forEach((c) => {
         snap.child(c.key).forEach((p) => { list.push({ studentKey: c.key, id: p.key, ...p.val() }) })

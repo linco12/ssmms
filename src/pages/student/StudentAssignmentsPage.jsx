@@ -41,7 +41,7 @@ export default function StudentAssignmentsPage() {
   // ── Step 1: find student's classKey by their UID ─────────────────────────
   useEffect(() => {
     if (!currentUser?.uid) return
-    get(dbRef(db, 'students')).then(snap => {
+    get(dbref(db, 'ssmms/students')).then(snap => {
       snap.forEach(c => {
         const s = c.val()
         if (s.linkedStudentUid === currentUser.uid) {
@@ -55,7 +55,7 @@ export default function StudentAssignmentsPage() {
   // ── Step 2: load assignments for student's class ──────────────────────────
   useEffect(() => {
     if (!studentClassKey) return
-    return onValue(dbRef(db, 'assignments'), snap => {
+    return onValue(dbref(db, 'ssmms/assignments'), snap => {
       const list = []
       snap.forEach(c => {
         const a = c.val()
@@ -81,7 +81,7 @@ export default function StudentAssignmentsPage() {
   useEffect(() => {
     if (!currentUser?.uid) return
     // Listen to all assignment submissions to find my own entries
-    return onValue(dbRef(db, 'assignmentSubmissions'), snap => {
+    return onValue(dbref(db, 'ssmms/assignmentSubmissions'), snap => {
       const subs = {}
       snap.forEach(aSnap => {
         const mySub = aSnap.child(currentUser.uid)

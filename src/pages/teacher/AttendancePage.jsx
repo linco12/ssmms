@@ -27,7 +27,7 @@ export default function AttendancePage() {
   // Load students + resolve classKey
   useEffect(() => {
     if (!assignedClass) return
-    const unsub1 = onValue(ref(db, 'students'), snap => {
+    const unsub1 = onValue(ref(db, 'ssmms/students'), snap => {
       const list = []
       snap.forEach(c => {
         const s = c.val()
@@ -36,7 +36,7 @@ export default function AttendancePage() {
       setStudents(list.sort((a,b) => (a.fullName||'').localeCompare(b.fullName||'')))
     })
     // Resolve classKey from classes node
-    get(ref(db, 'classes')).then(snap => {
+    get(ref(db, 'ssmms/classes')).then(snap => {
       snap.forEach(c => {
         if (c.val().name === assignedClass) setClassKey(c.key)
       })
@@ -47,7 +47,7 @@ export default function AttendancePage() {
   // Load all attendance for this class
   useEffect(() => {
     if (!classKey) return
-    return onValue(ref(db, `attendance/${classKey}`), snap => {
+    return onValue(ref(db, `ssmms/attendance/${classKey}`), snap => {
       setAllAttendance(snap.val() || {})
     })
   }, [classKey])
@@ -91,7 +91,7 @@ export default function AttendancePage() {
     const dk = toDateKey(date)
     setSaving(true)
     try {
-      await set(ref(db, `attendance/${classKey}/${dk}`), {
+      await set(ref(db, `ssmms/attendance/${classKey}/${dk}`), {
         noLesson: true,
         markedBy: currentUser.uid,
         markedAt: Date.now(),
@@ -110,7 +110,7 @@ export default function AttendancePage() {
     setSaving(true)
     const dk = toDateKey(date)
     try {
-      await set(ref(db, `attendance/${classKey}/${dk}`), {
+      await set(ref(db, `ssmms/attendance/${classKey}/${dk}`), {
         noLesson: false,
         markedBy: currentUser.uid,
         markedAt: Date.now(),

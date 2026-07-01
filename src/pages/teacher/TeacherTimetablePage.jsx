@@ -15,11 +15,11 @@ export default function TeacherTimetablePage() {
 
   useEffect(() => {
     const uns = [
-      onValue(ref(db, 'timetable'), snap => setTimetable(snap.val() || {})),
-      onValue(ref(db, 'classes'),   snap => {
+      onValue(ref(db, 'ssmms/timetable'), snap => setTimetable(snap.val() || {})),
+      onValue(ref(db, 'ssmms/classes'),   snap => {
         const l = []; snap.forEach(c => l.push({ key: c.key, ...c.val() })); setClasses(l)
       }),
-      onValue(ref(db, 'timetableConfig/schedule'), snap => {
+      onValue(ref(db, 'ssmms/timetableConfig/schedule'), snap => {
         if (snap.exists()) setConfig(snap.val())
       }),
     ]

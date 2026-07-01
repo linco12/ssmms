@@ -25,13 +25,13 @@ export default function CalendarPage() {
   const [savingTerm, setSavingTerm] = useState(false)
 
   useEffect(() => {
-    const u1 = onValue(ref(db, 'calendarEvents'), snap => {
+    const u1 = onValue(ref(db, 'ssmms/calendarEvents'), snap => {
       const list = []
       snap.forEach(c => { list.push({ key: c.key, ...c.val() }) })
       list.sort((a, b) => a.date.localeCompare(b.date))
       setEvents(list)
     })
-    const u2 = onValue(ref(db, 'terms'), snap => {
+    const u2 = onValue(ref(db, 'ssmms/terms'), snap => {
       const list = []
       snap.forEach(c => { list.push({ key: c.key, ...c.val() }) })
       list.sort((a, b) => a.startDate?.localeCompare(b.startDate || '') || 0)
@@ -60,7 +60,7 @@ export default function CalendarPage() {
       createdBy: currentUser.uid,
       createdAt: new Date().toISOString(),
     }
-    await push(ref(db, 'calendarEvents'), data)
+    await push(ref(db, 'ssmms/calendarEvents'), data)
     setShowEventModal(false)
     setEventForm(BLANK_EVENT)
     setSavingEvent(false)
@@ -68,7 +68,7 @@ export default function CalendarPage() {
 
   const deleteEvent = async (key) => {
     if (!confirm('Delete this event?')) return
-    await remove(ref(db, `calendarEvents/${key}`))
+    await remove(ref(db, `ssmms/calendarEvents/${key}`))
   }
 
   // ─── Terms ─────────────────────────────────────────────────────
@@ -88,11 +88,11 @@ export default function CalendarPage() {
       isCurrent: !!termForm.isCurrent,
     }
     if (editTermKey) {
-      await update(ref(db, `terms/${editTermKey}`), data)
+      await update(ref(db, `ssmms/terms/${editTermKey}`), data)
     } else {
-      await push(ref(db, 'terms'), data)
+      await push(ref(db, 'ssmms/terms'), data)
       // Also create term-start and term-end calendar events
-      await push(ref(db, 'calendarEvents'), {
+      await push(ref(db, 'ssmms/calendarEvents'), {
         title: `${data.name} Begins`,
         date: data.startDate,
         endDate: data.startDate,
@@ -101,7 +101,7 @@ export default function CalendarPage() {
         createdBy: currentUser.uid,
         createdAt: new Date().toISOString(),
       })
-      await push(ref(db, 'calendarEvents'), {
+      await push(ref(db, 'ssmms/calendarEvents'), {
         title: `${data.name} Ends`,
         date: data.endDate,
         endDate: data.endDate,
@@ -115,7 +115,7 @@ export default function CalendarPage() {
     if (data.isCurrent) {
       const others = terms.filter(t => t.key !== editTermKey && t.isCurrent)
       for (const t of others) {
-        await update(ref(db, `terms/${t.key}`), { isCurrent: false })
+        await update(ref(db, `ssmms/terms/${t.key}`), { isCurrent: false })
       }
     }
     setShowTermModal(false)
@@ -124,7 +124,7 @@ export default function CalendarPage() {
 
   const deleteTerm = async (key) => {
     if (!confirm('Delete this term?')) return
-    await remove(ref(db, `terms/${key}`))
+    await remove(ref(db, `ssmms/terms/${key}`))
   }
 
   const currentTerm = terms.find(t => t.isCurrent)

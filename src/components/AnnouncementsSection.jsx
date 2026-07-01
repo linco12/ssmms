@@ -17,7 +17,7 @@ export default function AnnouncementsSection() {
 
   // Expiring announcements from BroadcastPage
   useEffect(() => {
-    return onValue(ref(db, 'announcements'), snap => {
+    return onValue(ref(db, 'ssmms/announcements'), snap => {
       const now = new Date().toISOString()
       const list = []
       const expiredKeys = []
@@ -29,7 +29,7 @@ export default function AnnouncementsSection() {
           list.push({ key: c.key, source: 'broadcast', ...a })
         }
       })
-      expiredKeys.forEach(k => remove(ref(db, `announcements/${k}`)))
+      expiredKeys.forEach(k => remove(ref(db, `ssmms/announcements/${k}`)))
       list.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''))
       setAnnouncements(list)
     })
@@ -37,7 +37,7 @@ export default function AnnouncementsSection() {
 
   // Recent news/events from NewsPage (last 3 days)
   useEffect(() => {
-    return onValue(ref(db, 'news'), snap => {
+    return onValue(ref(db, 'ssmms/news'), snap => {
       const cutoff = new Date()
       cutoff.setDate(cutoff.getDate() - 3)
       const cutoffStr = cutoff.toISOString().split('T')[0]
@@ -60,7 +60,7 @@ export default function AnnouncementsSection() {
   return (
     <div className="mb-5 space-y-2">
       {announcements.map(a => (
-        <Item key={`ann-${a.key}`} item={a} onDelete={k => remove(ref(db, `announcements/${k}`))} />
+        <Item key={`ann-${a.key}`} item={a} onDelete={k => remove(ref(db, `ssmms/announcements/${k}`))} />
       ))}
       {recentNews.map(a => (
         <Item key={`news-${a.key}`} item={a} />

@@ -8,13 +8,13 @@ export default function CalendarViewPage() {
   const [terms, setTerms] = useState([])
 
   useEffect(() => {
-    const u1 = onValue(ref(db, 'calendarEvents'), snap => {
+    const u1 = onValue(ref(db, 'ssmms/calendarEvents'), snap => {
       const list = []
       snap.forEach(c => { list.push({ key: c.key, ...c.val() }) })
       list.sort((a, b) => a.date.localeCompare(b.date))
       setEvents(list)
     })
-    const u2 = onValue(ref(db, 'terms'), snap => {
+    const u2 = onValue(ref(db, 'ssmms/terms'), snap => {
       const list = []
       snap.forEach(c => { list.push({ key: c.key, ...c.val() }) })
       setTerms(list)

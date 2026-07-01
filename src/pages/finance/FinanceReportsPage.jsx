@@ -22,7 +22,7 @@ export default function FinanceReportsPage() {
   const [payments, setPayments] = useState([])
 
   useEffect(() => {
-    return onValue(ref(db, 'payments'), (snap) => {
+    return onValue(ref(db, 'ssmms/payments'), (snap) => {
       const list = []
       snap.forEach((sn) => { sn.forEach((p) => { list.push({ key: p.key, ...p.val() }) }) })
       setPayments(list)

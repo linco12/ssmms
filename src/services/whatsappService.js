@@ -81,7 +81,7 @@ export async function handleIncomingWhatsAppQuery(messageText) {
 }
 
 async function findStudentById(studentId) {
-  const snap = await get(query(ref(db, 'students'), orderByChild('studentId'), equalTo(studentId)))
+  const snap = await get(query(ref(db, 'ssmms/students'), orderByChild('studentId'), equalTo(studentId)))
   if (!snap.exists()) return null
   const entries = Object.entries(snap.val())
   return { key: entries[0][0], ...entries[0][1] }
@@ -97,7 +97,7 @@ async function getBalanceReply(studentId) {
 async function getResultsReply(studentId) {
   const student = await findStudentById(studentId)
   if (!student) return `No student found with ID ${studentId}.`
-  const resultsSnap = await get(ref(db, `academicResults/${student.key}`))
+  const resultsSnap = await get(ref(db, `ssmms/academicResults/${student.key}`))
   if (!resultsSnap.exists()) return `No academic results found yet for ${student.fullName}.`
   const results = resultsSnap.val()
   const lines = Object.entries(results)

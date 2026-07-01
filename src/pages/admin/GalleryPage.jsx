@@ -25,7 +25,7 @@ export default function GalleryPage() {
   const fileRef = useRef()
 
   useEffect(() => {
-    return onValue(ref(db, 'gallery'), snap => {
+    return onValue(ref(db, 'ssmms/gallery'), snap => {
       const list = []
       snap.forEach(c => { list.push({ key: c.key, ...c.val() }) })
       list.sort((a, b) => new Date(b.date) - new Date(a.date))
@@ -68,11 +68,11 @@ export default function GalleryPage() {
       }
       const data = { ...form, imageUrl, updatedAt: new Date().toISOString() }
       if (modal === 'new') {
-        const r = push(ref(db, 'gallery'))
+        const r = push(ref(db, 'ssmms/gallery'))
         await set(r, { ...data, createdAt: new Date().toISOString() })
       } else {
         const { key, ...rest } = data
-        await update(ref(db, `gallery/${form.key}`), rest)
+        await update(ref(db, `ssmms/gallery/${form.key}`), rest)
       }
       setModal(null)
     } finally {
@@ -126,7 +126,7 @@ export default function GalleryPage() {
             <div className="absolute top-2 right-2 hidden group-hover:flex gap-1">
               <button onClick={e => { e.stopPropagation(); openEdit(item) }}
                 className="bg-white text-xs text-[#0D3B66] px-2 py-1 rounded shadow font-medium hover:bg-slate-50">Edit</button>
-              <button onClick={e => { e.stopPropagation(); if (confirm('Delete this photo?')) remove(ref(db, `gallery/${item.key}`)) }}
+              <button onClick={e => { e.stopPropagation(); if (confirm('Delete this photo?')) remove(ref(db, `ssmms/gallery/${item.key}`)) }}
                 className="bg-white text-xs text-red-500 px-2 py-1 rounded shadow font-medium hover:bg-red-50">Del</button>
             </div>
           </div>

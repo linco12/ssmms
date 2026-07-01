@@ -7,7 +7,7 @@ export default function FinanceDashboard() {
   const [stats, setStats] = useState({ payments: 0, total: 0, outstanding: 0 })
 
   useEffect(() => {
-    const u1 = onValue(ref(db, 'payments'), (snap) => {
+    const u1 = onValue(ref(db, 'ssmms/payments'), (snap) => {
       let count = 0, total = 0
       snap.forEach((studentNode) => {
         studentNode.forEach((p) => {
@@ -17,7 +17,7 @@ export default function FinanceDashboard() {
       })
       setStats((s) => ({ ...s, payments: count, total }))
     })
-    const u2 = onValue(ref(db, 'students'), (snap) => {
+    const u2 = onValue(ref(db, 'ssmms/students'), (snap) => {
       let outstanding = 0
       snap.forEach((c) => { outstanding += Number(c.val().feeBalance || 0) })
       setStats((s) => ({ ...s, outstanding }))

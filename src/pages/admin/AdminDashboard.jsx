@@ -28,12 +28,12 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     const uns = [
-      onValue(ref(db, 'students'), snap => { const l = []; snap.forEach(c => { l.push({ key: c.key, ...c.val() }) }); setStudents(l) }),
-      onValue(ref(db, 'classes'), snap => { const l = []; snap.forEach(c => { l.push({ key: c.key, ...c.val() }) }); setClasses(l) }),
-      onValue(ref(db, 'subjects'), snap => setSubjects(snap.size || 0)),
-      onValue(ref(db, 'news'), snap => { const l = []; snap.forEach(c => { l.push({ key: c.key, ...c.val() }) }); l.sort((a,b) => new Date(b.date) - new Date(a.date)); setNews(l.slice(0, 5)) }),
-      onValue(ref(db, 'users'), snap => { let count = 0; snap.forEach(c => { if (c.val().role === 'teacher') count++ }); setTeachers(count) }),
-      onValue(ref(db, 'auditLogs'), snap => { const l = []; snap.forEach(c => { l.push({ key: c.key, ...c.val() }) }); l.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)); setAuditLogs(l.slice(0, 8)) }),
+      onValue(ref(db, 'ssmms/students'), snap => { const l = []; snap.forEach(c => { l.push({ key: c.key, ...c.val() }) }); setStudents(l) }),
+      onValue(ref(db, 'ssmms/classes'), snap => { const l = []; snap.forEach(c => { l.push({ key: c.key, ...c.val() }) }); setClasses(l) }),
+      onValue(ref(db, 'ssmms/subjects'), snap => setSubjects(snap.size || 0)),
+      onValue(ref(db, 'ssmms/news'), snap => { const l = []; snap.forEach(c => { l.push({ key: c.key, ...c.val() }) }); l.sort((a,b) => new Date(b.date) - new Date(a.date)); setNews(l.slice(0, 5)) }),
+      onValue(ref(db, 'ssmms/users'), snap => { let count = 0; snap.forEach(c => { if (c.val().role === 'teacher') count++ }); setTeachers(count) }),
+      onValue(ref(db, 'ssmms/auditLogs'), snap => { const l = []; snap.forEach(c => { l.push({ key: c.key, ...c.val() }) }); l.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)); setAuditLogs(l.slice(0, 8)) }),
     ]
     return () => uns.forEach(u => u())
   }, [])

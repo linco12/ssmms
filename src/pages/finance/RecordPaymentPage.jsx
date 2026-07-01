@@ -20,7 +20,7 @@ export default function RecordPaymentPage() {
   const [success, setSuccess] = useState(null)
 
   useEffect(() => {
-    return onValue(ref(db, 'students'), (snap) => {
+    return onValue(ref(db, 'ssmms/students'), (snap) => {
       const list = []
       snap.forEach((c) => { list.push({ key: c.key, ...c.val() }) })
       setStudents(list)
@@ -47,13 +47,13 @@ export default function RecordPaymentPage() {
         timestamp: serverTimestamp(),
       }
 
-      const payRef = push(ref(db, `payments/${selectedKey}`))
+      const payRef = push(ref(db, `ssmms/payments/${selectedKey}`))
       await payRef
       const payId = payRef.key
       paymentData.id = payId
-      await push(ref(db, `payments/${selectedKey}`), paymentData)
+      await push(ref(db, `ssmms/payments/${selectedKey}`), paymentData)
 
-      await update(ref(db, `students/${selectedKey}`), { feeBalance: newBalance })
+      await update(ref(db, `ssmms/students/${selectedKey}`), { feeBalance: newBalance })
 
       await logAction(currentUser, 'PAYMENT', 'fee', {
         studentId: student.studentId,

@@ -32,19 +32,19 @@ export default function BroadcastPage() {
   const [tError, setTError]       = useState('')
 
   useEffect(() => {
-    const u1 = onValue(ref(db, 'announcements'), snap => {
+    const u1 = onValue(ref(db, 'ssmms/announcements'), snap => {
       const list = []
       snap.forEach(c => { list.push({ key: c.key, ...c.val() }) })
       list.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''))
       setAnnouncements(list)
     })
-    const u2 = onValue(ref(db, 'classes'), snap => {
+    const u2 = onValue(ref(db, 'ssmms/classes'), snap => {
       const list = []
       snap.forEach(c => list.push({ key: c.key, ...c.val() }))
       list.sort((a, b) => a.name.localeCompare(b.name))
       setClasses(list)
     })
-    const u3 = onValue(ref(db, 'students'), snap => {
+    const u3 = onValue(ref(db, 'ssmms/students'), snap => {
       const list = []
       snap.forEach(c => list.push({ key: c.key, ...c.val() }))
       setAllStudents(list)
@@ -69,7 +69,7 @@ export default function BroadcastPage() {
         : null
 
       // Save to announcements node
-      await push(ref(db, 'announcements'), {
+      await push(ref(db, 'ssmms/announcements'), {
         title: title.trim(),
         body: body.trim(),
         expiresAt,
@@ -93,7 +93,7 @@ export default function BroadcastPage() {
 
   const deleteAnnouncement = async (key) => {
     if (!confirm('Delete this announcement?')) return
-    await remove(ref(db, `announcements/${key}`))
+    await remove(ref(db, `ssmms/announcements/${key}`))
   }
 
   // Targeted notification helpers
@@ -115,7 +115,7 @@ export default function BroadcastPage() {
     if (tType === 'student' && !tTargetUid)  return setTError('Please select a student.')
     setTSending(true)
     try {
-      await push(ref(db, 'targetedNotifications'), {
+      await push(ref(db, 'ssmms/targetedNotifications'), {
         title:     tTitle.trim(),
         body:      tBody.trim(),
         targetType: tType,
