@@ -1,0 +1,18 @@
+{
+  "appId": "com.tronicvolt.ssmms",
+  "appName": "SSMMS",
+  "webDir": "dist",
+  "android": {
+    "allowMixedContent": true
+  },
+  "plugins": {
+    "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    },
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_notification",
+      "iconColor": "#0D3B66",
+      "sound": "default.wav"
+    }
+  }
+}
